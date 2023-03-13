@@ -1,4 +1,4 @@
-version: '2.3'
+version: '3.8'
 
 ################################################################################
 # SERVICES
@@ -39,6 +39,7 @@ services:
       - "traefik.http.routers.dev-${APP_NAME}-traefiks.service=dev-${APP_NAME}-traefiks"
       - "traefik.http.routers.dev-${APP_NAME}-traefiks.middlewares=dev-${APP_NAME}-traefiks"  
       - "traefik.http.middlewares.dev-${APP_NAME}-traefiks.basicauth.users=dev:${HASHED_PASSWORD}"
+      - "traefik.http.middlewares.dev-${APP_NAME}-traefiks.basicauth.removeHeader=true"
       - "traefik.http.services.dev-${APP_NAME}-traefiks.loadbalancer.server.port=8080"
       - "traefik.http.services.dev-${APP_NAME}-traefiks.loadbalancer.server.scheme=http"
         #- "traefik.http.routers.dev-${APP_NAME}.rule=Host(`mail.${APP_NAME}.dev.neo.onl`, `auth.${APP_NAME}.dev.neo.onl`, `code.${APP_NAME}.dev.neo.onl`, `port-5139.${APP_NAME}.dev.neo.onl`)"
@@ -58,6 +59,7 @@ services:
       - "traefik.http.routers.dev-${APP_NAME}-s.service=dev-${APP_NAME}-s"
       - "traefik.http.routers.dev-${APP_NAME}-s.middlewares=dev-${APP_NAME}-s"  
       - "traefik.http.middlewares.dev-${APP_NAME}-s.basicauth.users=dev:${HASHED_PASSWORD}"
+      - "traefik.http.middlewares.dev-${APP_NAME}-s.basicauth.removeHeader=true"
       - "traefik.http.services.dev-${APP_NAME}-s.loadbalancer.server.port=443"
       - "traefik.http.services.dev-${APP_NAME}-s.loadbalancer.server.scheme=https"
 
