@@ -49,7 +49,7 @@ services:
       - "traefik.http.routers.dev-${APP_NAME}.middlewares=dev-${APP_NAME}-auth-mw"
       - "traefik.http.middlewares.dev-${APP_NAME}-auth-mw.redirectscheme.scheme=https"
         #- "traefik.http.routers.dev-${APP_NAME}-s.rule=Host(`mail.${APP_NAME}.dev.neo.onl`, `auth.${APP_NAME}.dev.neo.onl`, `code.${APP_NAME}.dev.neo.onl`, `port-5139.${APP_NAME}.dev.neo.onl`)"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.rule=HostRegexp(`auth.code.${APP_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${APP_NAME}-auths.rule=HostRegexp(`auth.${APP_NAME}.${DOMAIN_NAME}`)"
       - "traefik.http.routers.dev-${APP_NAME}-auths.entrypoints=websecure"
       - "traefik.http.routers.dev-${APP_NAME}-auths.tls=true"
       - "traefik.http.routers.dev-${APP_NAME}-auths.tls.certresolver=${CERTRESOLVER}"
