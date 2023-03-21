@@ -24,6 +24,8 @@ RUN \
     sudo \
     dotnet6 \
     golang \
+    nodejs npm \
+    make \
     && \
   echo "**** install code-server ****" && \
   if [ -z ${CODE_RELEASE+x} ]; then \

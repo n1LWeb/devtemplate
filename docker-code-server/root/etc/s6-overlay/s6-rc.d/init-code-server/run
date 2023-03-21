@@ -29,3 +29,10 @@ chmod 700 /config/.ssh
 if [ -n "$(ls -A /config/.ssh)" ]; then
     chmod 600 /config/.ssh/*
 fi
+
+install-extension muhammad-sammy.csharp
+install-extension ms-python.python
+install-extension golang.go
+install-extension vue.volar
+install-extension rangav.vscode-thunder-client
+

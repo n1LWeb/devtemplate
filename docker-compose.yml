@@ -142,7 +142,7 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: Europe/Berlin
-      PASSWORD: ${PASSWORD}
+      #PASSWORD: ${PASSWORD}
       SUDO_PASSWORD: ${PASSWORD}
       DEFAULT_WORKSPACE: /config/workspace
     labels:
