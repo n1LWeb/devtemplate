@@ -11,14 +11,14 @@ services:
       - "--accesslog=true"
       - "--experimental.http3=true"
       - "--providers.docker=true"
-      - "--providers.docker.network=devnet-${APP_NAME}"
+      - "--providers.docker.network=devnet-${COMPOSE_PROJECT_NAME}"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.constraints=Label(`traefik.docker.network`, `devnet-${APP_NAME}`)"
+      - "--providers.docker.constraints=Label(`traefik.docker.network`, `devnet-${COMPOSE_PROJECT_NAME}`)"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--log.level=DEBUG"
       - "--serverstransport.insecureskipverify=true"
-    container_name: dev-${APP_NAME}-traefik
+    container_name: dev-${COMPOSE_PROJECT_NAME}-traefik
     networks:
       internal:
       devnet:
@@ -28,54 +28,54 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=internal"
-      - "traefik.http.routers.dev-${APP_NAME}-traefik.rule=Host(`${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-traefik.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}-traefik.middlewares=dev-${APP_NAME}-traefik-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-traefik-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-traefiks.rule=Host(`${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-traefiks.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-traefiks.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-traefiks.tls.certresolver=${CERTRESOLVER}"
-      - "traefik.http.routers.dev-${APP_NAME}-traefiks.service=dev-${APP_NAME}-traefiks"
-      - "traefik.http.routers.dev-${APP_NAME}-traefiks.middlewares=dev-${APP_NAME}-traefiks"  
-      - "traefik.http.middlewares.dev-${APP_NAME}-traefiks.basicauth.users=dev:${HASHED_PASSWORD}"
-      - "traefik.http.middlewares.dev-${APP_NAME}-traefiks.basicauth.removeHeader=true"
-      - "traefik.http.services.dev-${APP_NAME}-traefiks.loadbalancer.server.port=8080"
-      - "traefik.http.services.dev-${APP_NAME}-traefiks.loadbalancer.server.scheme=http"
-      - "traefik.http.routers.dev-${APP_NAME}-auth.rule=Host(`auth.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-auth.priority=100"
-      - "traefik.http.routers.dev-${APP_NAME}-auth.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}.middlewares=dev-${APP_NAME}-auth-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-auth-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.rule=HostRegexp(`auth.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.priority=100"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.tls.certresolver=${CERTRESOLVER}"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.tls.domains[0].main=auth.${APP_NAME}.${DOMAIN_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.service=dev-${APP_NAME}-auths"
-      - "traefik.http.services.dev-${APP_NAME}-auths.loadbalancer.server.port=443"
-      - "traefik.http.services.dev-${APP_NAME}-auths.loadbalancer.server.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}.rule=HostRegexp(`{subdomain:[a-zA-Z0-9]+}.${APP_NAME}.${DOMAIN_NAME}`, `{port:[0-9]+}.code.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}.priority=10"
-      - "traefik.http.routers.dev-${APP_NAME}.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}.middlewares=dev-${APP_NAME}-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-s.rule=HostRegexp(`{subdomain:[a-zA-Z0-9]+}.${APP_NAME}.${DOMAIN_NAME}`, `{port:[0-9]+}.code.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-s.priority=10"
-      - "traefik.http.routers.dev-${APP_NAME}-s.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-s.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-s.tls.certresolver=${CERTRESOLVER}"
-      - "traefik.http.routers.dev-${APP_NAME}-s.tls.domains[0].main=${APP_NAME}.${DOMAIN_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-s.tls.domains[0].sans=*.${APP_NAME}.${DOMAIN_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-s.tls.domains[1].main=code.${APP_NAME}.${DOMAIN_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-s.tls.domains[1].sans=*.code.${APP_NAME}.${DOMAIN_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-s.service=dev-${APP_NAME}-s"
-      - "traefik.http.routers.dev-${APP_NAME}-s.middlewares=dev-${APP_NAME}-s"  
-      - "traefik.http.middlewares.dev-${APP_NAME}-s.basicauth.users=dev:${HASHED_PASSWORD}"
-      - "traefik.http.middlewares.dev-${APP_NAME}-s.basicauth.removeHeader=true"
-      - "traefik.http.services.dev-${APP_NAME}-s.loadbalancer.server.port=443"
-      - "traefik.http.services.dev-${APP_NAME}-s.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefik.rule=Host(`${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefik.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefik.middlewares=dev-${COMPOSE_PROJECT_NAME}-traefik-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-traefik-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefiks.rule=Host(`${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefiks.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefiks.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefiks.tls.certresolver=${CERTRESOLVER}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefiks.service=dev-${COMPOSE_PROJECT_NAME}-traefiks"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-traefiks.middlewares=dev-${COMPOSE_PROJECT_NAME}-traefiks"  
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-traefiks.basicauth.users=dev:${HASHED_PASSWORD}"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-traefiks.basicauth.removeHeader=true"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-traefiks.loadbalancer.server.port=8080"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-traefiks.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auth.rule=Host(`auth.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auth.priority=100"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auth.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}.middlewares=dev-${COMPOSE_PROJECT_NAME}-auth-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-auth-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.rule=HostRegexp(`auth.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.priority=100"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.tls.certresolver=${CERTRESOLVER}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.tls.domains[0].main=auth.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.service=dev-${COMPOSE_PROJECT_NAME}-auths"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-auths.loadbalancer.server.port=443"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-auths.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}.rule=HostRegexp(`{subdomain:[a-zA-Z0-9]+}.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`, `{port:[0-9]+}.code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}.priority=10"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}.middlewares=dev-${COMPOSE_PROJECT_NAME}-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.rule=HostRegexp(`{subdomain:[a-zA-Z0-9]+}.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`, `{port:[0-9]+}.code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.priority=10"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.tls.certresolver=${CERTRESOLVER}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.tls.domains[0].main=${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.tls.domains[0].sans=*.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.tls.domains[1].main=code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.tls.domains[1].sans=*.code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.service=dev-${COMPOSE_PROJECT_NAME}-s"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-s.middlewares=dev-${COMPOSE_PROJECT_NAME}-s"  
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-s.basicauth.users=dev:${HASHED_PASSWORD}"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-s.basicauth.removeHeader=true"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-s.loadbalancer.server.port=443"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-s.loadbalancer.server.scheme=https"
 
   mail:
     image: marlonb/mailcrab
@@ -84,26 +84,26 @@ services:
     #  - 1025:1025
     networks:
       devnet:
-    container_name: dev-${APP_NAME}-mail
+    container_name: dev-${COMPOSE_PROJECT_NAME}-mail
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=devnet-${APP_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-mail.rule=Host(`mail.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-mail.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}-mail.middlewares=dev-${APP_NAME}-mail-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-mail-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-mails.rule=Host(`mail.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-mails.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-mails.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-mails.service=dev-${APP_NAME}-mails"
-      - "traefik.http.services.dev-${APP_NAME}-mails.loadbalancer.server.port=1080"
-      - "traefik.http.services.dev-${APP_NAME}-mails.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=devnet-${COMPOSE_PROJECT_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mail.rule=Host(`mail.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mail.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mail.middlewares=dev-${COMPOSE_PROJECT_NAME}-mail-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-mail-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mails.rule=Host(`mail.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mails.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mails.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-mails.service=dev-${COMPOSE_PROJECT_NAME}-mails"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-mails.loadbalancer.server.port=1080"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-mails.loadbalancer.server.scheme=http"
 
   auth:
     image: quay.io/keycloak/keycloak:19.0.1
     networks:
       devnet:
-    container_name: dev-${APP_NAME}-auth
+    container_name: dev-${COMPOSE_PROJECT_NAME}-auth
     command: start-dev --proxy=edge --import-realm
     volumes:
       - ./files/realm-import.json:/opt/keycloak/data/import/realm-import.json
@@ -112,29 +112,30 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${PASSWORD}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=devnet-${APP_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-auth.rule=Host(`auth.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-auth.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}-auth.middlewares=dev-${APP_NAME}-auth-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-auth-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.rule=Host(`auth.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-auths.service=dev-${APP_NAME}-auths"
-      - "traefik.http.services.dev-${APP_NAME}-auths.loadbalancer.server.port=8080"
-      - "traefik.http.services.dev-${APP_NAME}-auths.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=devnet-${COMPOSE_PROJECT_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auth.rule=Host(`auth.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auth.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auth.middlewares=dev-${COMPOSE_PROJECT_NAME}-auth-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-auth-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.rule=Host(`auth.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-auths.service=dev-${COMPOSE_PROJECT_NAME}-auths"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-auths.loadbalancer.server.port=8080"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-auths.loadbalancer.server.scheme=http"
 
   coder:
     build: docker-code-server
     volumes:
       - ./coderconfig:/config
       - /var/run/docker.sock:/var/run/docker.sock
-    #command: --proxy-domain code.${APP_NAME}.dev.neo.onl
-    container_name: dev-${APP_NAME}-code
+    #command: --proxy-domain code.${COMPOSE_PROJECT_NAME}.dev.neo.onl
+    container_name: dev-${COMPOSE_PROJECT_NAME}-code
     networks:
       devnet:
     environment:
-      PROXY_DOMAIN: "code.${APP_NAME}.dev.neo.onl"
+      PROXY_DOMAIN: "code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
+      VSCODE_PROXY_URI: "https://{{port}}.code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}"
       PUID: 1000
       PGID: 1000
       TZ: Europe/Berlin
@@ -143,42 +144,42 @@ services:
       DEFAULT_WORKSPACE: /config/workspace
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=devnet-${APP_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-code=Host(`code.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-code.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}-code.middlewares=dev-${APP_NAME}-code-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-code-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-codes.rule=Host(`code.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-codes.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-codes.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-codes.service=dev-${APP_NAME}-codes"
-      - "traefik.http.services.dev-${APP_NAME}-codes.loadbalancer.server.port=8443"
-      - "traefik.http.services.dev-${APP_NAME}-codes.loadbalancer.server.scheme=http"
-      - "traefik.http.routers.dev-${APP_NAME}-proxy.rule=HostRegexp(`{port:[0-9]+}.code.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-proxy.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-proxy.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-proxy.service=dev-${APP_NAME}-proxy"
-      - "traefik.http.services.dev-${APP_NAME}-proxy.loadbalancer.server.port=8443"
-      - "traefik.http.services.dev-${APP_NAME}-proxy.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=devnet-${COMPOSE_PROJECT_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-code=Host(`code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-code.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-code.middlewares=dev-${COMPOSE_PROJECT_NAME}-code-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-code-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-codes.rule=Host(`code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-codes.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-codes.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-codes.service=dev-${COMPOSE_PROJECT_NAME}-codes"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-codes.loadbalancer.server.port=8443"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-codes.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-proxy.rule=HostRegexp(`{port:[0-9]+}.code.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-proxy.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-proxy.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-proxy.service=dev-${COMPOSE_PROJECT_NAME}-proxy"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-proxy.loadbalancer.server.port=8443"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-proxy.loadbalancer.server.scheme=http"
 
   adminer:
     build: adminer
     networks:
       devnet:
-    container_name: dev-${APP_NAME}-adminer
+    container_name: dev-${COMPOSE_PROJECT_NAME}-adminer
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=devnet-${APP_NAME}"
-      - "traefik.http.routers.dev-${APP_NAME}-adminer.rule=Host(`db.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-adminer.entrypoints=web"
-      - "traefik.http.routers.dev-${APP_NAME}-adminer.middlewares=dev-${APP_NAME}-adminer-mw"
-      - "traefik.http.middlewares.dev-${APP_NAME}-adminer-mw.redirectscheme.scheme=https"
-      - "traefik.http.routers.dev-${APP_NAME}-adminers.rule=Host(`db.${APP_NAME}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.dev-${APP_NAME}-adminers.entrypoints=websecure"
-      - "traefik.http.routers.dev-${APP_NAME}-adminers.tls=true"
-      - "traefik.http.routers.dev-${APP_NAME}-adminers.service=dev-${APP_NAME}-adminers"
-      - "traefik.http.services.dev-${APP_NAME}-adminers.loadbalancer.server.port=8080"
-      - "traefik.http.services.dev-${APP_NAME}-adminers.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=devnet-${COMPOSE_PROJECT_NAME}"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminer.rule=Host(`db.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminer.entrypoints=web"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminer.middlewares=dev-${COMPOSE_PROJECT_NAME}-adminer-mw"
+      - "traefik.http.middlewares.dev-${COMPOSE_PROJECT_NAME}-adminer-mw.redirectscheme.scheme=https"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminers.rule=Host(`db.${COMPOSE_PROJECT_NAME}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminers.entrypoints=websecure"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminers.tls=true"
+      - "traefik.http.routers.dev-${COMPOSE_PROJECT_NAME}-adminers.service=dev-${COMPOSE_PROJECT_NAME}-adminers"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-adminers.loadbalancer.server.port=8080"
+      - "traefik.http.services.dev-${COMPOSE_PROJECT_NAME}-adminers.loadbalancer.server.scheme=http"
     environment:
       ADMINER_DEFAULT_SERVER: db
 
@@ -186,7 +187,7 @@ services:
     build: database
     networks:
       devnet:
-    container_name: dev-${APP_NAME}-db
+    container_name: dev-${COMPOSE_PROJECT_NAME}-db
     environment:
       ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: ${PASSWORD}
@@ -203,4 +204,4 @@ networks:
     external: true
     name: internal
   devnet:
-    name: devnet-${APP_NAME}
+    name: devnet-${COMPOSE_PROJECT_NAME}
